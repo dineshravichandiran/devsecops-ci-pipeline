@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devsecops-demo-app
+  labels:
+    app: devsecops-demo-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: devsecops-demo-app
+  template:
+    metadata:
+      labels:
+        app: devsecops-demo-app
+    spec:
+      containers:
+        - name: devsecops-demo-app
+          image: devsecops-demo-app:latest
+          ports:
+            - containerPort: 8080
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 20
