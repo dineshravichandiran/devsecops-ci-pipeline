@@ -69,11 +69,20 @@ pipeline {
                 }
                 stage('SCA (Dependency-Check)') {
                     steps {
-                        // Report-only: no failure threshold. The vulnerability database is cached in a named volume.
-                        script {
-                            scan('owasp/dependency-check:latest',
-                                 '--scan . --project devsecops-demo-app --format SARIF --format HTML --out reports --disableAssembly',
-                                 '-v depcheck-data:/usr/share/dependency-check/data')
+                        // Report-only: no failure threshold. Dependency-Check needs a free NVD API key to download its
+                        // vulnerability database. Without one it cannot run, so the stage is marked UNSTABLE (visible in
+                        // the build) instead of breaking the whole pipeline, and NO SCA report is produced on that run.
+                        // The database is cached in a named volume.
+                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                            script {
+                                def key = env.NVD_API_KEY ?: ''
+                                if (!key) {
+                                    echo 'NVD_API_KEY is not set: Dependency-Check may fail to update its database and produce no report.'
+                                }
+                                scan('owasp/dependency-check:latest',
+                                     "--scan . --project devsecops-demo-app --format SARIF --format HTML --out reports --disableAssembly" + (key ? ' --nvdApiKey "$NVD_API_KEY"' : ''),
+                                     '-v depcheck-data:/usr/share/dependency-check/data' + (key ? ' -e NVD_API_KEY' : ''))
+                            }
                         }
                     }
                 }
