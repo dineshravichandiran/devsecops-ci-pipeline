@@ -1,0 +1,19 @@
+# Jenkins build #4 (the run BEFORE the ZAP fix): 2026-10-23T10:41Z
+build #4  status=SUCCESS  duration=162s
+  Declarative: Checkout SCM                  SUCCESS          0s
+  Checkout                                   SUCCESS          1s
+  Secret Scanning                            SUCCESS          1s
+  Security Scans                             SUCCESS          0s
+  SAST (Semgrep)                             SUCCESS          5s
+  SCA (Dependency-Check)                     UNSTABLE         4s
+  Build & Container Image                    SUCCESS         25s
+  Container Image Scanning (Trivy)           SUCCESS        122s
+  DAST (OWASP ZAP baseline)                  UNSTABLE         4s
+  Deploy to Staging (placeholder)            SUCCESS          0s
+  Security Policy Gate (placeholder)         SUCCESS          0s
+  Declarative: Post Actions                  SUCCESS          1s
+
+ZAP stage: UNSTABLE after 4s. Cause (my script, now fixed): $WORKSPACE was not passed into the ZAP container, so
+'cp: cannot stat /.zap' and then FileNotFoundError: /zap/wrk/.zap/rules.tsv.
+Semgrep in this run: 18 findings (17 mutable GitHub Action tags + 1 'last USER is root' in jenkins/Dockerfile).
+Trivy in this run: 4 HIGH findings, all in a Go standard-library version bundled in the base image (see README).

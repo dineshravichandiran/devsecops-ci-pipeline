@@ -1,0 +1,110 @@
+# Jenkins build #5 of devsecops-ci-pipeline (local Jenkins, branch feat/platform-addons, FORCE_STAGING=true)
+# 2026-10-23T10:41Z; docker client 29.8.0 / daemon 29.8.0; Apple Silicon (arm64)
+
+result: SUCCESS   total 58s
+
+  Declarative: Checkout SCM                  SUCCESS        0s
+  Checkout                                   SUCCESS        1s
+  Secret Scanning                            SUCCESS        1s
+  Security Scans                             SUCCESS        0s
+  SAST (Semgrep)                             SUCCESS        5s
+  SCA (Dependency-Check)                     UNSTABLE       4s
+  Build & Container Image                    SUCCESS        8s
+  Container Image Scanning (Trivy)           SUCCESS        4s
+  DAST (OWASP ZAP baseline)                  SUCCESS       35s
+  Deploy to Staging (placeholder)            SUCCESS        0s
+  Security Policy Gate (placeholder)         SUCCESS        0s
+  Declarative: Post Actions                  SUCCESS        0s
+
+Artifacts archived:
+   reports/gitleaks.sarif
+   reports/semgrep.sarif
+   reports/trivy.sarif
+   reports/zap-report.html
+
+--- console excerpts (timestamps trimmed) ---
+[90m10:40AM[0m [32mINF[0m [1mno leaks found[0m
+NVD_API_KEY is not set: Dependency-Check may fail to update its database and produce no report.
+[ERROR] Error updating the NVD Data
+org.owasp.dependencycheck.data.update.exception.UpdateException: Error updating the NVD Data
+[ERROR] Error updating the NVD Data
+Ran 36 rules on 20 files: 17 findings.
++ echo app is up
+app is up
+PASS: Vulnerable JS Library (Powered by Retire.js) [10003]
+PASS: Cookie No HttpOnly Flag [10010]
+PASS: Cookie Without Secure Flag [10011]
+PASS: Re-examine Cache-control Directives [10015]
+PASS: Cross-Domain JavaScript Source File Inclusion [10017]
+PASS: Content-Type Header Missing [10019]
+PASS: Information Disclosure - Debug Error Messages [10023]
+PASS: Information Disclosure - Sensitive Information in URL [10024]
+PASS: Information Disclosure - Sensitive Information in HTTP Referrer Header [10025]
+PASS: HTTP Parameter Override [10026]
+PASS: Information Disclosure - Suspicious Comments [10027]
+PASS: Off-site Redirect [10028]
+PASS: Cookie Poisoning [10029]
+PASS: User Controllable Charset [10030]
+PASS: User Controllable HTML Element Attribute (Potential XSS) [10031]
+PASS: Viewstate [10032]
+PASS: Directory Browsing [10033]
+PASS: Heartbleed OpenSSL Vulnerability (Indicative) [10034]
+PASS: Strict-Transport-Security Header [10035]
+PASS: HTTP Server Response Header [10036]
+PASS: Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s) [10037]
+PASS: X-Backend-Server Header Information Leak [10039]
+PASS: Secure Pages Include Mixed Content [10040]
+PASS: HTTP to HTTPS Insecure Transition in Form Post [10041]
+PASS: HTTPS to HTTP Insecure Transition in Form Post [10042]
+PASS: User Controllable JavaScript Event (XSS) [10043]
+PASS: Big Redirect Detected (Potential Sensitive Information Leak) [10044]
+PASS: Retrieved from Cache [10050]
+PASS: X-ChromeLogger-Data (XCOLD) Header Information Leak [10052]
+PASS: Cookie without SameSite Attribute [10054]
+PASS: CSP [10055]
+PASS: X-Debug-Token Information Leak [10056]
+PASS: Username Hash Found [10057]
+PASS: X-AspNet-Version Response Header [10061]
+PASS: PII Disclosure [10062]
+PASS: Base64 Disclosure [10094]
+PASS: Timestamp Disclosure [10096]
+PASS: Hash Disclosure [10097]
+PASS: Cross-Domain Misconfiguration [10098]
+PASS: Source Code Disclosure [10099]
+PASS: Weak Authentication Method [10105]
+PASS: Reverse Tabnabbing [10108]
+PASS: Modern Web Application [10109]
+PASS: Dangerous JS Functions [10110]
+PASS: Authentication Request Identified [10111]
+PASS: Session Management Response Identified [10112]
+PASS: Verification Request Identified [10113]
+PASS: Script Served From Malicious Domain (polyfill) [10115]
+PASS: ZAP is Out of Date [10116]
+PASS: Absence of Anti-CSRF Tokens [10202]
+PASS: Full Path Disclosure [110009]
+PASS: Private IP Disclosure [2]
+PASS: Server Side Technology Version with Known Vulnerabilities [20020]
+PASS: Session ID in URL Rewrite [3]
+PASS: Script Passive Scan Rules [50001]
+PASS: Stats Passive Scan Rule [50003]
+PASS: Insecure JSF ViewState [90001]
+PASS: Java Serialization Object [90002]
+PASS: Sub Resource Integrity Attribute Missing [90003]
+PASS: Charset Mismatch [90011]
+PASS: Application Error Disclosure [90022]
+PASS: WSDL File Detection [90030]
+PASS: Loosely Scoped Cookie [90033]
+WARN-NEW: In Page Banner Information Leak [10009] x 2 
+WARN-NEW: Missing Anti-clickjacking Header [10020] x 1 
+WARN-NEW: X-Content-Type-Options Header Missing [10021] x 1 
+WARN-NEW: Content Security Policy (CSP) Header Not Set [10038] x 3 
+WARN-NEW: Storable and Cacheable Content [10049] x 3 
+WARN-NEW: Permissions Policy Header Not Set [10063] x 3 
+WARN-NEW: Cross-Origin-Embedder-Policy Header Missing or Invalid [90004] x 3 
+WARN-NEW: Sec-Fetch-Dest Header is Missing [90005] x 11 
+FAIL-NEW: 0	FAIL-INPROG: 0	WARN-NEW: 8	WARN-INPROG: 0	INFO: 0	IGNORE: 0	PASS: 63
++ echo Deploy container image devsecops-demo-app:5 to staging (placeholder: nothing is deployed)
+Deploy container image devsecops-demo-app:5 to staging (placeholder: nothing is deployed)
++ echo Gate passed - no critical findings blocked the pipeline (placeholder: no scan result is read)
+Gate passed - no critical findings blocked the pipeline (placeholder: no scan result is read)
+Finished: SUCCESS
