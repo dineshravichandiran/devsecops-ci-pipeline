@@ -125,13 +125,9 @@ pipeline {
                     '''
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                         sh """
-                            docker run --rm --network "\$NET" --volumes-from ${env.JC} --user root --entrypoint sh \\
-                              ghcr.io/zaproxy/zaproxy:stable -c '
-                                mkdir -p /zap/wrk && cp -r "\$WORKSPACE/.zap" /zap/wrk/
-                                zap-baseline.py -t http://app:8080/ -c .zap/rules.tsv -a -I -r zap-report.html
-                                rc=\\\$?
-                                cp /zap/wrk/zap-report.html "\$WORKSPACE/reports/" 2>/dev/null || true
-                                exit \\\$rc'
+                            docker run --rm --network "\$NET" --volumes-from ${env.JC} --user root \\
+                              -e WORKSPACE="\$WORKSPACE" -e ZAP_TARGET=http://app:8080/ \\
+                              --entrypoint sh ghcr.io/zaproxy/zaproxy:stable "\$WORKSPACE/jenkins/scripts/zap-baseline.sh"
                         """
                     }
                 }

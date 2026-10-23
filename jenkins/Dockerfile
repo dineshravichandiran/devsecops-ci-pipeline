@@ -20,3 +20,7 @@ RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
 ENV CASC_JENKINS_CONFIG=/usr/share/jenkins/ref/casc.yaml
 COPY casc.yaml /usr/share/jenkins/ref/casc.yaml
+
+# Back to the unprivileged user (found by Semgrep: the last USER must not be root). The compose file
+# still runs the container as root so it can use the Docker socket; see the security trade-offs in README.md.
+USER jenkins
