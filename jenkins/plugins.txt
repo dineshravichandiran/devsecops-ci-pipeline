@@ -1,0 +1,7 @@
+configuration-as-code
+git
+workflow-aggregator
+timestamper
+build-timeout
+job-dsl
+pipeline-stage-view

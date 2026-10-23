@@ -22,6 +22,33 @@ Being specific, because "security gate" can mean very different things:
 
 Making Trivy, ZAP and the policy gate actually block a promotion is the next piece of work.
 
+## What's new: the same pipeline in Jenkins
+
+`Jenkinsfile` mirrors the GitHub Actions workflow stage for stage and in the same order, and `jenkins/` holds a local
+Jenkins (Dockerfile, plugin list, Configuration as Code, compose on port 8085) that runs it. See
+[jenkins/README.md](jenkins/README.md) to run it, including the security trade-offs of mounting the Docker socket.
+
+Result of the last run (build #5, local Jenkins on Apple Silicon; evidence in `docs/evidence/`):
+
+| Stage | Result | Notes |
+|---|---|---|
+| Secret scanning (Gitleaks) | passed | no leaks found; this stage blocks on a finding |
+| SAST (Semgrep) | ran | 17 findings (report-only): 17 mutable GitHub Action tags such as `@v4` instead of commit hashes |
+| SCA (Dependency-Check) | **UNSTABLE** | needs a free NVD API key to download its database; no SCA report was produced |
+| Build and image | passed | placeholder WAR, then `docker build` |
+| Image scan (Trivy) | ran | 4 HIGH findings, report-only |
+| DAST (ZAP baseline) | ran | 0 failures, 8 warnings, 63 passes (security headers); report-only |
+| Deploy to staging | placeholder | prints a message only |
+| Security policy gate | placeholder | prints a message only; it does not read any scan result |
+
+Findings the pipeline caught in this repository's own work:
+- Semgrep flagged the Jenkins image I had just written (it ended as `root`). Fixed, and the count went from 18 to 17.
+- The 17 mutable action tags in the workflow are still open.
+- Trivy's 4 HIGH findings are in a Go standard-library version bundled in the Tomcat base image, not in the placeholder app.
+  **Because of them, I did not turn Trivy into a failing gate**: it would fail every build until the base image is updated.
+
+Not done: SCA has not produced a report (no NVD key); the GitHub Actions workflow was not changed; nothing was pushed to GitHub.
+
 ## Pipeline stages
 
 ```
