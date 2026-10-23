@@ -1,0 +1,34 @@
+# Jenkins Configuration as Code. Secrets come from the environment (see .env.example), never from this file.
+jenkins:
+  systemMessage: "devsecops-ci-pipeline: Jenkins mirror of the GitHub Actions workflow"
+  numExecutors: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_ID}"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+unclassified:
+  location:
+    url: "http://localhost:${JENKINS_HOST_PORT:-8085}/"
+
+jobs:
+  - script: >
+      pipelineJob('devsecops-ci-pipeline') {
+        description('Mirror of .github/workflows/devsecops-pipeline.yml')
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url('${JENKINS_REPO_URL}') }
+                branch('${JENKINS_REPO_BRANCH}')
+              }
+            }
+            scriptPath('Jenkinsfile')
+          }
+        }
+      }
