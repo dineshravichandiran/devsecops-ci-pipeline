@@ -20,6 +20,10 @@ jobs:
   - script: >
       pipelineJob('devsecops-ci-pipeline') {
         description('Mirror of .github/workflows/devsecops-pipeline.yml')
+        // Declared here too so the job is parameterized on a fresh Jenkins (the Jenkinsfile declares it as well).
+        parameters {
+          booleanParam('FORCE_STAGING', false, 'Run the (placeholder) staging deploy and policy gate even when not on main')
+        }
         definition {
           cpsScm {
             scm {
