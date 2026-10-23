@@ -7,14 +7,12 @@
 //   * Deploy runs only on main, as in Actions. Set FORCE_STAGING to exercise the placeholder stages from another branch.
 //
 // Scanners run as official container images through the Docker CLI, so Jenkins itself only needs docker.
-// --volumes-from <this container> makes the workspace visible to them at the same path.
-
-def jenkinsContainer = ''
+// --volumes-from <this container> makes the workspace visible to them at the same path (the container id is kept in env.JC).
 
 def scan(String image, String args, String extra = '') {
     // Runs `image` with the workspace mounted at the same path as in this container.
     sh """
-        docker run --rm --volumes-from ${jenkinsContainer} -w "\$WORKSPACE" ${extra} ${image} ${args}
+        docker run --rm --volumes-from ${env.JC} -w "\$WORKSPACE" ${extra} ${image} ${args}
     """
 }
 
@@ -43,7 +41,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                script { jenkinsContainer = sh(returnStdout: true, script: 'hostname').trim() }
+                script { env.JC = sh(returnStdout: true, script: 'hostname').trim() }
                 sh 'mkdir -p reports && git log --oneline -3 && docker version --format "docker {{.Client.Version}} / daemon {{.Server.Version}}"'
             }
         }
@@ -118,7 +116,7 @@ pipeline {
                     '''
                     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                         sh """
-                            docker run --rm --network "\$NET" --volumes-from ${jenkinsContainer} --user root --entrypoint sh \\
+                            docker run --rm --network "\$NET" --volumes-from ${env.JC} --user root --entrypoint sh \\
                               ghcr.io/zaproxy/zaproxy:stable -c '
                                 mkdir -p /zap/wrk && cp -r "\$WORKSPACE/.zap" /zap/wrk/
                                 zap-baseline.py -t http://app:8080/ -c .zap/rules.tsv -a -I -r zap-report.html
